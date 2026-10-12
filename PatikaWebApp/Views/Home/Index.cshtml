@@ -1,0 +1,33 @@
+﻿@model IEnumerable<PatikaWebApp.Models.Gyogyszer>
+
+@{
+    ViewData["Title"] = "Gyógyszerek adatai";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Gyógyszerek adatai</h1>
+</div>
+
+<table class="table table-bordered table-striped mt-4">
+    <thead>
+        <tr>
+            <th>Név</th>
+            <th>Hatóanyag</th>
+            <th>Vényköteles</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    <a asp-action="Reszletek" asp-route-id="@item.Id">@item.Nev</a>
+                </td>
+                <td>@item.Hatoanyag</td>
+                <td class="text-center">
+                    <input type="checkbox" disabled @(item.Venykoteles ? "checked" : "") />
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

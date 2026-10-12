@@ -1,0 +1,13 @@
+﻿@model PatikaWebApp.Models.Gyogyszer
+
+@{
+    ViewData["Title"] = Model.Nev;
+}
+
+<div class="text-center">
+    <h1 class="display-3">@Model.Nev</h1>
+    <div class="mt-4">
+        <img src="~/imgs/@Model.kepnev" alt="@Model.Nev" style="height: 200px;" />
+    </div>
+</div>
+
