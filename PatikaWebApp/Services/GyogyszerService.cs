@@ -5,92 +5,50 @@ namespace PatikaWebApp.Services
 {
     public class GyogyszerService
     {
-        private readonly string connectionString = "SERVER=localhost;DATABASE=patika;UID=root;PASSWORD=;SSL MODE=none;";
-
-
-        public string Create(Gyogyszer gyogyszer)
-        {
-            string connectionString = "SERVER = localhost;" +
-                          "DATABASE= patika;" +
-                          "UID = root;" +
-                          "PASSWORD =;" ;
-
-            using (MySqlConnection conn = new MySqlConnection(connectionString))
-            {
-                conn.Open();
-                string sql = "INSERT INTO gyogyszer (Id, Nev, Hatoanyag, Venykoteles, kepnev) VALUES (@Id, @Nev, @Hatoanyag, @Venykoteles, @kepnev)";
-
-                using (MySqlCommand cmd = new MySqlCommand(sql, conn))
-                {
-                    cmd.Parameters.AddWithValue("@Id", gyogyszer.Id);
-                    cmd.Parameters.AddWithValue("@Nev", gyogyszer.Nev);
-                    cmd.Parameters.AddWithValue("@Hatoanyag", gyogyszer.Hatoanyag);
-                    cmd.Parameters.AddWithValue("@Venykoteles", gyogyszer.Venykoteles);
-                    cmd.Parameters.AddWithValue("@kepnev", gyogyszer.kepnev);
-
-                    int sorokszama = cmd.ExecuteNonQuery();
-
-                    if (sorokszama > 0)
-                    {
-                        return "Sikeres beszúrás";
-                    }
-                    else
-                    {
-                        return "Sikertelen beszúrás";
-                    }
-                }
-            }
-        }
-
+        private readonly string _connectionString = "Server=localhost;Database=patika;Uid=root;Pwd=;";
 
         public List<Gyogyszer> GetAllGyogyszer()
         {
-            List<Gyogyszer> gyogyszerek = new List<Gyogyszer>();
+            var gyogyszerek = new List<Gyogyszer>();
 
-            string connectionString = "SERVER = localhost;" +
-                          "DATABASE= patika;" +
-                          "UID = root;" +
-                          "PASSWORD =;" ;
-
-            using (MySqlConnection conn = new MySqlConnection(connectionString))
+            using (var connection = new MySqlConnection(_connectionString))
             {
-                conn.Open();
-                string sql = "SELECT Id, Nev, Hatoanyag, Venykoteles, kepnev FROM gyogyszer";
-
-                using (MySqlCommand cmd = new MySqlCommand(sql, conn))
-                using (MySqlDataReader reader = cmd.ExecuteReader())
+                connection.Open();
+                string query = "SELECT Id, Nev, Hatoanyag, Venykoteles, kepnev FROM gyogyszer";
+                using (var command = new MySqlCommand(query, connection))
                 {
-                    while (reader.Read())
+                    using (var reader = command.ExecuteReader())
                     {
-                        Gyogyszer gyogyszer = new Gyogyszer
+                        while (reader.Read())
                         {
-                            Id = reader.GetInt32("Id"),
-                            Nev = reader.GetString("Nev"),
-                            Hatoanyag = reader.GetString("Hatoanyag"),
-                            Venykoteles = reader.GetBoolean("Venykoteles"),
-                            kepnev = reader.GetString("Kepnev"),
-
-                        };
-                        gyogyszerek.Add(gyogyszer);
+                            gyogyszerek.Add(new Gyogyszer
+                            {
+                                Id = reader.GetInt32("Id"),
+                                Nev = reader.GetString("Nev"),
+                                Hatoanyag = reader.GetString("Hatoanyag"),
+                                Venykoteles = reader.GetBoolean("Venykoteles"),
+                                kepnev = reader.GetString("kepnev")
+                            });
+                        }
                     }
                 }
             }
+
             return gyogyszerek;
         }
 
-        public Gyogyszer GetById(int id)
+        public Gyogyszer? GetById(int id)
         {
-            Gyogyszer gyogyszer = null;
+            Gyogyszer? gyogyszer = null;
 
-            using (MySqlConnection conn = new MySqlConnection(connectionString))
+            using (var connection = new MySqlConnection(_connectionString))
             {
-                conn.Open();
-                string sql = "SELECT Id, Nev, Hatoanyag, Venykoteles, kepnev FROM vasarlo WHERE Id = @Id";
-
-                using (MySqlCommand cmd = new MySqlCommand(sql, conn))
+                connection.Open();
+                string query = "SELECT Id, Nev, Hatoanyag, Venykoteles, kepnev FROM gyogyszer WHERE Id = @Id";
+                using (var command = new MySqlCommand(query, connection))
                 {
-                    cmd.Parameters.AddWithValue("@Id", id);
-                    using (MySqlDataReader reader = cmd.ExecuteReader())
+                    command.Parameters.AddWithValue("@Id", id);
+                    using (var reader = command.ExecuteReader())
                     {
                         if (reader.Read())
                         {
@@ -100,14 +58,14 @@ namespace PatikaWebApp.Services
                                 Nev = reader.GetString("Nev"),
                                 Hatoanyag = reader.GetString("Hatoanyag"),
                                 Venykoteles = reader.GetBoolean("Venykoteles"),
-                                kepnev = reader.GetString("Kepnev"),
+                                kepnev = reader.GetString("kepnev")
                             };
                         }
                     }
                 }
             }
+
             return gyogyszer;
         }
-
     }
 }
